@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -70,9 +71,14 @@
       from { transform: translateY(0); opacity: 1; }
       to { transform: translateY(100px); opacity: 0; }
     }
+
+    .product-cover-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full font-body">
   <div id="app" class="h-full w-full overflow-auto" style="background-color: #faf9f7;"><!-- Navigation -->
@@ -90,6 +96,10 @@
        </div>
       </div>
       <div class="flex items-center gap-4 md:gap-8"><a href="#products" class="text-xs md:text-sm font-medium hover:opacity-70 transition-opacity" style="color: #2d3436;">Products</a> <a href="#features" class="text-xs md:text-sm font-medium hover:opacity-70 transition-opacity" style="color: #2d3436;">Features</a> <button id="about-btn" class="text-xs md:text-sm font-medium hover:opacity-70 transition-opacity" style="color: #2d3436; background: none; border: none; cursor: pointer;">About</button>
+       <div id="auth-buttons" class="flex items-center gap-2"><button id="login-btn" class="text-xs md:text-sm px-3 py-1.5 rounded-full font-medium hover:opacity-90 transition-all" style="background-color: #2d3436; color: #ffffff;">Login</button>
+       </div>
+       <div id="user-menu" class="hidden items-center gap-2"><span id="user-name" class="text-xs md:text-sm font-medium" style="color: #2d3436;"></span> <button id="buyer-panel-btn" class="hidden text-xs md:text-sm px-3 py-1.5 rounded-full font-medium hover:opacity-90 transition-all" style="background-color: #0066ff; color: #ffffff;">My Orders</button> <button id="admin-panel-btn" class="hidden text-xs md:text-sm px-3 py-1.5 rounded-full font-medium hover:opacity-90 transition-all" style="background-color: #00b894; color: #ffffff;">Manage Products</button> <button id="logout-btn" class="text-xs md:text-sm px-3 py-1.5 rounded-full font-medium hover:opacity-90 transition-all" style="background-color: #636e72; color: #ffffff;">Logout</button>
+       </div>
       </div>
      </div>
     </div>
@@ -152,7 +162,93 @@
       </div>
      </div>
     </div>
-   </section><!-- About Modal -->
+   </section><!-- Login Modal -->
+   <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8" style="background-color: #ffffff;"><button id="close-login-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 class="font-display text-xl md:text-2xl font-bold mb-6" style="color: #2d3436;">Login to Your Account</h3>
+     <form id="login-form" class="space-y-4">
+      <div><label for="login-email" class="block text-sm font-medium mb-2" style="color: #2d3436;">Email Address</label> <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="your.email@example.com">
+      </div>
+      <div><label for="login-password" class="block text-sm font-medium mb-2" style="color: #2d3436;">Password</label> <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Enter your password">
+      </div>
+      <div id="login-error" class="hidden p-3 rounded-lg text-sm" style="background-color: #ffe5e5; color: #d63031;">
+       Invalid credentials. Please try again.
+      </div><button type="submit" class="w-full py-3 rounded-full font-semibold transition-all hover:opacity-90" style="background-color: #2d3436; color: #ffffff;"> Sign In </button>
+     </form>
+     <div class="mt-6 text-center">
+      <p class="text-sm" style="color: #636e72;">Don't have an account? <button id="show-register-btn" class="font-semibold hover:opacity-70 transition-opacity" style="color: #2d3436; background: none; border: none; cursor: pointer;">Create one</button></p>
+     </div>
+     <div class="mt-6 p-4 rounded-xl text-xs" style="background-color: #faf9f7; color: #636e72;">
+      <p class="font-semibold mb-2" style="color: #2d3436;">Demo Admin Credentials:</p>
+      <p><strong>Admin:</strong> admin@cylearning.com / admin123</p>
+     </div>
+    </div>
+   </div><!-- Register Modal -->
+   <div id="register-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-register-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 class="font-display text-xl md:text-2xl font-bold mb-6" style="color: #2d3436;">Create Buyer Account</h3>
+     <form id="register-form" class="space-y-4">
+      <div><label for="register-name" class="block text-sm font-medium mb-2" style="color: #2d3436;">Full Name *</label> <input type="text" id="register-name" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Enter your full name">
+      </div>
+      <div><label for="register-email" class="block text-sm font-medium mb-2" style="color: #2d3436;">Email Address *</label> <input type="email" id="register-email" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="your.email@example.com">
+      </div>
+      <div><label for="register-password" class="block text-sm font-medium mb-2" style="color: #2d3436;">Password *</label> <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="At least 6 characters">
+       <p class="text-xs mt-1" style="color: #636e72;">Minimum 6 characters</p>
+      </div>
+      <div><label for="register-confirm-password" class="block text-sm font-medium mb-2" style="color: #2d3436;">Confirm Password *</label> <input type="password" id="register-confirm-password" required minlength="6" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Re-enter your password">
+      </div>
+      <div id="register-error" class="hidden p-3 rounded-lg text-sm" style="background-color: #ffe5e5; color: #d63031;">
+       Error message
+      </div>
+      <div id="register-success" class="hidden p-3 rounded-lg text-sm" style="background-color: #d4edda; color: #155724;">
+       Account created successfully! Redirecting to login...
+      </div><button type="submit" id="register-submit-btn" class="w-full py-3 rounded-full font-semibold transition-all hover:opacity-90" style="background-color: #00b894; color: #ffffff;"> Create Account </button>
+     </form>
+     <div class="mt-6 text-center">
+      <p class="text-sm" style="color: #636e72;">Already have an account? <button id="show-login-btn" class="font-semibold hover:opacity-70 transition-opacity" style="color: #2d3436; background: none; border: none; cursor: pointer;">Sign in</button></p>
+     </div>
+    </div>
+   </div><!-- Admin Product Management Modal -->
+   <div id="admin-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-4xl w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-admin-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 id="admin-modal-title" class="font-display text-2xl md:text-3xl font-bold mb-6" style="color: #2d3436;">Product Management</h3>
+     <div class="mb-8">
+      <h4 id="product-form-title" class="font-semibold text-lg mb-4" style="color: #2d3436;">Add New Product</h4>
+      <form id="add-product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="hidden" id="editing-product-id" value="">
+       <div><label for="product-name" class="block text-sm font-medium mb-2" style="color: #2d3436;">Product Name *</label> <input type="text" id="product-name" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Enter product name">
+       </div>
+       <div><label for="product-price" class="block text-sm font-medium mb-2" style="color: #2d3436;">Price *</label> <input type="number" id="product-price" required min="0" step="0.01" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="99">
+       </div>
+       <div><label for="product-currency" class="block text-sm font-medium mb-2" style="color: #2d3436;">Currency *</label> <select id="product-currency" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;"> <option value="₱">₱ (PHP)</option> <option value="$">$ (USD)</option> <option value="€">€ (EUR)</option> </select>
+       </div>
+       <div><label for="product-category" class="block text-sm font-medium mb-2" style="color: #2d3436;">Category *</label> <input type="text" id="product-category" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Digital Download">
+       </div>
+       <div><label for="product-emoji" class="block text-sm font-medium mb-2" style="color: #2d3436;">Emoji Icon *</label> <input type="text" id="product-emoji" required maxlength="2" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="🎨">
+       </div>
+       <div><label for="product-gradient" class="block text-sm font-medium mb-2" style="color: #2d3436;">Gradient Colors *</label> <select id="product-gradient" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;"> <option value="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">Purple</option> <option value="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">Pink</option> <option value="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">Blue</option> <option value="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)">Green</option> <option value="linear-gradient(135deg, #fa709a 0%, #fee140 100%)">Orange</option> <option value="linear-gradient(135deg, #30cfd0 0%, #330867 100%)">Dark Blue</option> </select>
+       </div>
+       <div class="md:col-span-2"><label for="product-image-url" class="block text-sm font-medium mb-2" style="color: #2d3436;">Product Cover Image URL (Optional)</label> <input type="url" id="product-image-url" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="https://example.com/image.jpg">
+        <p class="text-xs mt-1" style="color: #636e72;">Paste an image URL (must start with https://). If empty, emoji will be shown.</p>
+       </div>
+       <div class="md:col-span-2"><label for="product-link" class="block text-sm font-medium mb-2" style="color: #2d3436;">Gumroad Link *</label> <input type="url" id="product-link" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="https://yourstore.gumroad.com/l/product">
+       </div>
+       <div class="md:col-span-2 flex gap-2"><button type="submit" id="product-submit-btn" class="flex-1 py-3 rounded-full font-semibold transition-all hover:opacity-90" style="background-color: #00b894; color: #ffffff;"> <span id="submit-btn-text">Add Product</span> <span id="submit-btn-loader" class="hidden">Adding...</span> </button> <button type="button" id="cancel-edit-btn" class="hidden px-6 py-3 rounded-full font-semibold transition-all hover:opacity-90" style="background-color: #636e72; color: #ffffff;"> Cancel </button>
+       </div>
+      </form>
+     </div>
+     <div>
+      <h4 class="font-semibold text-lg mb-4" style="color: #2d3436;">Existing Products</h4>
+      <div id="admin-products-list" class="space-y-3"><!-- Products will be listed here -->
+      </div>
+     </div>
+    </div>
+   </div><!-- About Modal -->
    <div id="about-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
     <div class="relative rounded-2xl shadow-2xl max-w-2xl w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-about-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -163,6 +259,240 @@
       <p>From educational books to interactive digital games, our products are designed to help learners grow, help students projects or any digital projects, parents teach, and creators build with confidence.</p>
       <p>We believe learning should be simple, engaging, and accessible to everyone. That's why our products are carefully designed to help you learn faster, create better, and start immediately.</p>
       <p class="font-semibold" style="color: #2d3436;">We're proud to support learners and creators worldwide and we're just getting started.</p>
+     </div>
+    </div>
+   </div><!-- GCash Payment Modal -->
+   <div id="gcash-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-gcash-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #0066ff;"><span class="text-2xl">💳</span>
+      </div>
+      <div>
+       <h3 class="font-display text-xl md:text-2xl font-bold" style="color: #2d3436;">Pay with GCash</h3>
+       <p class="text-sm" style="color: #636e72;">Complete your purchase</p>
+      </div>
+     </div>
+     <div id="gcash-product-info" class="p-4 rounded-xl mb-6" style="background-color: #faf9f7;">
+      <p class="text-xs font-medium mb-1" style="color: #636e72;">Product</p>
+      <p class="font-semibold text-lg" style="color: #2d3436;" id="gcash-product-name"></p>
+      <p class="text-xl font-bold mt-2" style="color: #d63031;" id="gcash-product-price"></p>
+     </div>
+     <div class="mb-6">
+      <h4 class="font-semibold mb-3" style="color: #2d3436;">Payment Instructions:</h4>
+      <ol class="space-y-2 text-sm" style="color: #636e72;">
+       <li class="flex gap-2"><span class="font-bold" style="color: #0066ff;">1.</span> <span>Send payment to GCash number: <strong style="color: #2d3436;">09615116206</strong></span></li>
+       <li class="flex gap-2"><span class="font-bold" style="color: #0066ff;">2.</span> <span>Take a screenshot of your payment confirmation</span></li>
+       <li class="flex gap-2"><span class="font-bold" style="color: #0066ff;">3.</span> <span>Fill out the form below with your email and attach the screenshot</span></li>
+       <li class="flex gap-2"><span class="font-bold" style="color: #0066ff;">4.</span> <span>We'll send the product to your email within 24 hours</span></li>
+      </ol>
+     </div>
+     <form id="gcash-payment-form" class="space-y-4">
+      <div><label for="buyer-name" class="block text-sm font-medium mb-2" style="color: #2d3436;">Full Name *</label> <input type="text" id="buyer-name" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Enter your full name">
+      </div>
+      <div><label for="buyer-email" class="block text-sm font-medium mb-2" style="color: #2d3436;">Email Address *</label> <input type="email" id="buyer-email" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="your.email@example.com">
+       <p class="text-xs mt-1" style="color: #636e72;">We'll send your product to this email</p>
+      </div>
+      <div><label for="buyer-phone" class="block text-sm font-medium mb-2" style="color: #2d3436;">Phone Number *</label> <input type="tel" id="buyer-phone" required class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="09XX XXX XXXX">
+      </div>
+      <div><label for="gcash-reference" class="block text-sm font-medium mb-2" style="color: #2d3436;">GCash Reference Number (Optional)</label> <input type="text" id="gcash-reference" class="w-full px-4 py-3 rounded-lg border text-sm" style="border-color: #e8e6e1; color: #2d3436;" placeholder="Enter reference number">
+      </div>
+      <div><label class="block text-sm font-medium mb-2" style="color: #2d3436;">Payment Screenshot *</label>
+       <div class="border-2 border-dashed rounded-lg p-6 text-center" style="border-color: #e8e6e1;"><input type="file" id="payment-screenshot" accept="image/*" required class="hidden"> <label for="payment-screenshot" class="cursor-pointer">
+         <div class="flex flex-col items-center">
+          <svg class="w-12 h-12 mb-2" style="color: #636e72;" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg><span class="text-sm font-medium" style="color: #2d3436;">Click to upload screenshot</span> <span class="text-xs mt-1" style="color: #636e72;">PNG, JPG up to 10MB</span>
+         </div></label>
+        <div id="file-name" class="text-sm mt-2" style="color: #0066ff;"></div>
+       </div>
+      </div><button type="submit" class="w-full py-4 rounded-full font-semibold transition-all hover:opacity-90" style="background-color: #0066ff; color: #ffffff;"> Submit Order </button>
+     </form>
+     <div id="gcash-success" class="hidden text-center py-8">
+      <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style="background-color: #00b894;">
+       <svg class="w-8 h-8" style="color: #ffffff;" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+       </svg>
+      </div>
+      <h4 class="font-display text-xl font-bold mb-2" style="color: #2d3436;">Order Submitted!</h4>
+      <p class="text-sm mb-4" style="color: #636e72;">We've received your payment details. We'll send your product to your email within 24 hours.</p><button onclick="closeGcashModal()" class="px-6 py-2 rounded-full font-medium" style="background-color: #2d3436; color: #ffffff;">Close</button>
+     </div>
+    </div>
+   </div><!-- Privacy Policy Modal -->
+   <div id="privacy-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-3xl w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-privacy-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 class="font-display text-2xl md:text-3xl font-bold mb-6 pr-6" style="color: #2d3436;">Privacy Policy</h3>
+     <div class="space-y-6 text-sm md:text-base" style="color: #636e72; line-height: 1.8;">
+      <div>
+       <p class="text-xs mb-2" style="color: #636e72;">Last Updated: January 2026</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">1. Information We Collect</h4>
+       <p class="mb-2">When you create an account or make a purchase, we collect:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Personal information (name, email address, phone number)</li>
+        <li>Payment information (processed securely through Gumroad or GCash)</li>
+        <li>Purchase history and product downloads</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">2. How We Use Your Information</h4>
+       <p class="mb-2">We use your information to:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Process your orders and deliver digital products</li>
+        <li>Send order confirmations and product download links</li>
+        <li>Provide customer support and respond to inquiries</li>
+        <li>Improve our products and services</li>
+        <li>Send promotional emails (only with your consent)</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">3. Data Security</h4>
+       <p>We implement appropriate security measures to protect your personal information. All payment processing is handled securely through trusted third-party payment processors (Gumroad and GCash). We do not store credit card information on our servers.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">4. Sharing Your Information</h4>
+       <p class="mb-2">We do not sell or rent your personal information to third parties. We may share information with:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Payment processors (Gumroad, GCash) to complete transactions</li>
+        <li>Email service providers to send order confirmations</li>
+        <li>Legal authorities when required by law</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">5. Your Rights</h4>
+       <p class="mb-2">You have the right to:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Access your personal data</li>
+        <li>Request correction of inaccurate data</li>
+        <li>Request deletion of your account and data</li>
+        <li>Opt-out of promotional communications</li>
+        <li>Download your purchase history</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">6. Cookies</h4>
+       <p>We use essential cookies to maintain your login session and improve user experience. We do not use tracking or advertising cookies.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">7. Children's Privacy</h4>
+       <p>Our services are not directed to children under 13. We do not knowingly collect personal information from children.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">8. Contact Us</h4>
+       <p>For privacy-related questions or to exercise your rights, contact us at:</p>
+       <p class="mt-2">Email: <a href="mailto:cydelalcantarajr9@gmail.com" class="font-medium hover:opacity-70" style="color: #2d3436;">cydelalcantarajr9@gmail.com</a></p>
+       <p>Phone: <a href="tel:09600053305" class="font-medium hover:opacity-70" style="color: #2d3436;">09600053305</a></p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Terms of Service Modal -->
+   <div id="terms-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-3xl w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-terms-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 class="font-display text-2xl md:text-3xl font-bold mb-6 pr-6" style="color: #2d3436;">Terms of Service</h3>
+     <div class="space-y-6 text-sm md:text-base" style="color: #636e72; line-height: 1.8;">
+      <div>
+       <p class="text-xs mb-2" style="color: #636e72;">Last Updated: January 2026</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">1. Agreement to Terms</h4>
+       <p>By accessing or using CyLearningGlobal's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">2. Digital Products</h4>
+       <p class="mb-2">All products sold on CyLearningGlobal are digital downloads:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Products are delivered electronically via email within 24 hours of confirmed payment</li>
+        <li>You receive a personal, non-exclusive, non-transferable license to use the product</li>
+        <li>Products are for personal or educational use only</li>
+        <li>Commercial resale or redistribution is strictly prohibited</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">3. Purchases and Payments</h4>
+       <p class="mb-2">Payment processing:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Payments are processed through Gumroad (international) or GCash (Philippines)</li>
+        <li>All prices are listed in the currency shown (PHP or USD)</li>
+        <li>Payment must be received before product delivery</li>
+        <li>For GCash payments, please allow up to 24 hours for manual verification</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">4. Refund Policy</h4>
+       <p class="mb-2">Due to the digital nature of our products:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>All sales are final once the product has been delivered</li>
+        <li>Refunds may be considered if the product is defective or significantly different from description</li>
+        <li>Refund requests must be submitted within 7 days of purchase</li>
+        <li>Contact us at cydelalcantarajr9@gmail.com for refund requests</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">5. Intellectual Property</h4>
+       <p class="mb-2">All products and content are protected by copyright:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>CyLearningGlobal retains all ownership rights to products</li>
+        <li>You may not copy, modify, distribute, or resell our products</li>
+        <li>Sharing download links or files with others is prohibited</li>
+        <li>Violation may result in legal action and account termination</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">6. User Accounts</h4>
+       <p class="mb-2">When creating an account:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>You must provide accurate and complete information</li>
+        <li>You are responsible for maintaining account security</li>
+        <li>You must not share your account credentials</li>
+        <li>We reserve the right to suspend or terminate accounts for violations</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">7. Prohibited Uses</h4>
+       <p class="mb-2">You may not:</p>
+       <ul class="list-disc pl-6 space-y-1">
+        <li>Use products for commercial purposes without permission</li>
+        <li>Reverse engineer or extract assets from products</li>
+        <li>Upload products to file-sharing or torrent sites</li>
+        <li>Claim authorship of our products</li>
+        <li>Use products in any unlawful manner</li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">8. Disclaimer of Warranties</h4>
+       <p>Products are provided "as is" without warranties of any kind. We do not guarantee that products will meet your specific requirements or that they will be error-free.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">9. Limitation of Liability</h4>
+       <p>CyLearningGlobal shall not be liable for any indirect, incidental, or consequential damages arising from the use of our products or services.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">10. Changes to Terms</h4>
+       <p>We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting. Continued use of our services constitutes acceptance of modified terms.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">11. Governing Law</h4>
+       <p>These terms are governed by the laws of the Philippines. Any disputes shall be resolved in the appropriate courts of the Philippines.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold text-lg mb-2" style="color: #2d3436;">12. Contact Information</h4>
+       <p>For questions about these terms, contact us:</p>
+       <p class="mt-2">Email: <a href="mailto:cydelalcantarajr9@gmail.com" class="font-medium hover:opacity-70" style="color: #2d3436;">cydelalcantarajr9@gmail.com</a></p>
+       <p>Phone: <a href="tel:09600053305" class="font-medium hover:opacity-70" style="color: #2d3436;">09600053305</a></p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Buyer Panel Modal -->
+   <div id="buyer-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.7); display: none;">
+    <div class="relative rounded-2xl shadow-2xl max-w-3xl w-full p-6 md:p-8 max-h-[90vh] overflow-auto" style="background-color: #ffffff;"><button id="close-buyer-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-70 transition-opacity" style="background-color: #f5f5f5; color: #2d3436;">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <h3 class="font-display text-2xl md:text-3xl font-bold mb-6" style="color: #2d3436;">My Orders</h3>
+     <div id="buyer-orders-list" class="space-y-4"><!-- Orders will be listed here -->
      </div>
     </div>
    </div><!-- Contact Modal -->
@@ -199,7 +529,7 @@
         </svg>
        </div><span class="font-display font-bold text-sm md:text-base" style="color: #ffffff;">CyLearningGlobal</span>
       </div>
-      <div class="flex items-center gap-4 md:gap-6"><a href="#" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9;">Privacy</a> <a href="#" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9;">Terms</a> <button id="contact-btn" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9; background: none; border: none; cursor: pointer;">Contact</button>
+      <div class="flex items-center gap-4 md:gap-6"><button id="privacy-btn" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9; background: none; border: none; cursor: pointer;">Privacy</button> <button id="terms-btn" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9; background: none; border: none; cursor: pointer;">Terms</button> <button id="contact-btn" class="text-xs md:text-sm hover:opacity-70 transition-opacity" style="color: #dfe6e9; background: none; border: none; cursor: pointer;">Contact</button>
       </div>
       <p class="text-xs md:text-sm" style="color: #636e72;">© 2026 CyLearningGlobal. All rights reserved.</p>
      </div>
@@ -207,42 +537,55 @@
    </footer>
   </div>
   <script>
-    // Product data
-    const products = [
-      {
-        id: 1,
-        name: "Zoological Adventure Book",
-        price: 99,
-        currency: "₱",
-        category: "Digital Download",
-        emoji: "🦁",
-        gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        link: "https://cydeluxe7.gumroad.com/l/tqbziw"
-      },
-      {
-        id: 2,
-        name: "Kids Learning Games",
-        price: 10,
-        currency: "$",
-        category: "Digital Download",
-        emoji: "🎮",
-        gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-        link: "https://cydeluxe7.gumroad.com/l/lvrta"
-      },
-      {
-        id: 3,
-        name: "Valentines Games",
-        price: 100,
-        currency: "₱",
-        category: "Digital Download",
-        emoji: "💝",
-        gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-        link: "https://cydeluxe7.gumroad.com/l/mzzaxz"
-      }
-    ];
+    // Authentication state
+    let currentUser = null;
+    let allProducts = [];
+    let registeredUsers = [];
+    let allOrders = [];
 
-    // Cart state
-    let cart = [];
+    // Demo users
+    const DEMO_USERS = {
+      'admin@cylearning.com': { password: 'admin123', role: 'admin', name: 'Admin' }
+    };
+
+    // Load users and orders from localStorage
+    function loadLocalData() {
+      const savedUsers = localStorage.getItem('cylearning_users');
+      const savedOrders = localStorage.getItem('cylearning_orders');
+      
+      registeredUsers = savedUsers ? JSON.parse(savedUsers) : [];
+      allOrders = savedOrders ? JSON.parse(savedOrders) : [];
+    }
+
+    // Save to localStorage
+    function saveUsers() {
+      localStorage.setItem('cylearning_users', JSON.stringify(registeredUsers));
+    }
+
+    function saveOrders() {
+      localStorage.setItem('cylearning_orders', JSON.stringify(allOrders));
+    }
+
+    // Data SDK handler
+    const dataHandler = {
+      onDataChanged(data) {
+        allProducts = data;
+        renderProducts();
+        if (currentUser && currentUser.role === 'admin') {
+          renderAdminProductsList();
+        }
+      }
+    };
+
+    // Initialize Data SDK
+    async function initDataSdk() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+    }
 
     // Default config
     const defaultConfig = {
@@ -261,26 +604,585 @@
     // Render products
     function renderProducts() {
       const grid = document.getElementById('products-grid');
-      grid.innerHTML = products.map((product, index) => `
-        <div class="product-card rounded-2xl overflow-hidden shadow-sm" style="background-color: #ffffff; animation-delay: ${index * 0.1}s;">
-          <div class="relative h-64 overflow-hidden flex items-center justify-center" style="background: ${product.gradient};">
-            <span class="product-image text-7xl">${product.emoji}</span>
-            <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium" style="background-color: rgba(255,255,255,0.9); color: #2d3436;">${product.category}</span>
-            <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold" style="background-color: rgba(45, 53, 67, 0.9); color: #ffffff;">INSTANT DOWNLOAD</span>
+      
+      if (allProducts.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" style="background-color: #faf9f7;">
+              <svg class="w-10 h-10" style="color: #636e72;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+              </svg>
+            </div>
+            <p class="text-lg font-semibold mb-2" style="color: #2d3436;">No products yet</p>
+            <p class="text-sm" style="color: #636e72;">Login as admin to add your first product</p>
           </div>
-          <div class="p-6">
-            <h4 class="font-display text-lg font-semibold mb-1" style="color: #2d3436;">${product.name}</h4>
-            <p class="text-xl font-bold mb-4" style="color: #d63031;">${product.currency}${product.price}</p>
-            <a href="${product.link}" target="_blank" rel="noopener noreferrer" class="block w-full py-3 rounded-full font-medium transition-all hover:opacity-90 text-center buy-now-btn" style="background-color: #2d3436;">
-              <span style="color: #ffffff;">Buy Now</span>
-            </a>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = allProducts.map((product, index) => {
+        const productId = product.__backendId;
+        const escapedName = product.product_name.replace(/'/g, "\\'");
+        const hasImage = product.image_url && product.image_url.startsWith('https://');
+        const isAdmin = currentUser && currentUser.role === 'admin';
+        
+        const imageContent = hasImage 
+          ? `<img src="${product.image_url}" alt="${product.product_name}" class="product-cover-image" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='block';">
+             <span class="product-image text-7xl" style="display: none;">${product.emoji}</span>`
+          : `<span class="product-image text-7xl">${product.emoji}</span>`;
+        
+        const editButton = isAdmin ? `
+          <button onclick="editProductById('${productId}')" class="block w-full py-3 rounded-full font-medium transition-all hover:opacity-90 text-center" style="background-color: #00b894;">
+            <span style="color: #ffffff;">✏️ Edit Product</span>
+          </button>
+        ` : '';
+        
+        return `
+          <div class="product-card rounded-2xl overflow-hidden shadow-sm" style="background-color: #ffffff; animation-delay: ${index * 0.1}s;">
+            <div class="relative h-64 overflow-hidden flex items-center justify-center" style="background: ${product.gradient};">
+              ${imageContent}
+              <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium" style="background-color: rgba(255,255,255,0.9); color: #2d3436;">${product.category}</span>
+              <span class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold" style="background-color: rgba(45, 53, 67, 0.9); color: #ffffff;">INSTANT DOWNLOAD</span>
+            </div>
+            <div class="p-6">
+              <h4 class="font-display text-lg font-semibold mb-1" style="color: #2d3436;">${product.product_name}</h4>
+              <p class="text-xl font-bold mb-4" style="color: #d63031;">${product.currency}${product.price}</p>
+              <div class="space-y-2">
+                <a href="${product.link}" target="_blank" rel="noopener noreferrer" class="block w-full py-3 rounded-full font-medium transition-all hover:opacity-90 text-center" style="background-color: #2d3436;">
+                  <span style="color: #ffffff;">Buy via Gumroad</span>
+                </a>
+                <button onclick="openGcashPayment('${productId}', '${escapedName}', ${product.price}, '${product.currency}')" class="block w-full py-3 rounded-full font-medium transition-all hover:opacity-90 text-center gcash-btn" style="background-color: #0066ff;">
+                  <span style="color: #ffffff;">💳 Pay with GCash</span>
+                </button>
+                ${editButton}
+              </div>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // Initialize
-    renderProducts();
+    // Authentication functions
+    function updateAuthUI() {
+      const authButtons = document.getElementById('auth-buttons');
+      const userMenu = document.getElementById('user-menu');
+      const adminPanelBtn = document.getElementById('admin-panel-btn');
+      const buyerPanelBtn = document.getElementById('buyer-panel-btn');
+      
+      if (currentUser) {
+        authButtons.classList.add('hidden');
+        userMenu.classList.remove('hidden');
+        userMenu.classList.add('flex');
+        document.getElementById('user-name').textContent = currentUser.name;
+        
+        // Show appropriate panel button based on role
+        if (currentUser.role === 'admin') {
+          adminPanelBtn.classList.remove('hidden');
+          buyerPanelBtn.classList.add('hidden');
+        } else {
+          adminPanelBtn.classList.add('hidden');
+          buyerPanelBtn.classList.remove('hidden');
+        }
+      } else {
+        authButtons.classList.remove('hidden');
+        userMenu.classList.add('hidden');
+        userMenu.classList.remove('flex');
+        adminPanelBtn.classList.add('hidden');
+        buyerPanelBtn.classList.add('hidden');
+      }
+    }
+
+    function login(email, password) {
+      // Check demo admin
+      const demoUser = DEMO_USERS[email];
+      if (demoUser && demoUser.password === password) {
+        currentUser = { email, name: demoUser.name, role: demoUser.role };
+        updateAuthUI();
+        return true;
+      }
+      
+      // Check registered buyers
+      const registeredUser = registeredUsers.find(u => 
+        u.email === email && 
+        u.password === password && 
+        u.role === 'buyer'
+      );
+      
+      if (registeredUser) {
+        currentUser = { email: registeredUser.email, name: registeredUser.name, role: 'buyer' };
+        updateAuthUI();
+        return true;
+      }
+      
+      return false;
+    }
+
+    function logout() {
+      currentUser = null;
+      updateAuthUI();
+      closeAdminModal();
+    }
+
+    // Admin product management
+    async function addProduct(productData) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      
+      if (allProducts.length >= 999) {
+        showToast('Maximum limit of 999 products reached!', 'error');
+        return;
+      }
+
+      // Show loading state
+      const submitBtn = document.getElementById('product-submit-btn');
+      const btnText = document.getElementById('submit-btn-text');
+      const btnLoader = document.getElementById('submit-btn-loader');
+      submitBtn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+      
+      const newProduct = {
+        product_name: productData.name,
+        price: parseFloat(productData.price),
+        currency: productData.currency,
+        category: productData.category,
+        emoji: productData.emoji,
+        gradient: productData.gradient,
+        link: productData.link,
+        image_url: productData.image_url || '',
+        created_at: new Date().toISOString(),
+        created_by: currentUser.email
+      };
+
+      const result = await window.dataSdk.create(newProduct);
+      
+      // Hide loading state
+      submitBtn.disabled = false;
+      btnText.classList.remove('hidden');
+      btnLoader.classList.add('hidden');
+      
+      if (result.isOk) {
+        showToast('Product added successfully!', 'success');
+        document.getElementById('add-product-form').reset();
+      } else {
+        showToast('Failed to add product. Please try again.', 'error');
+      }
+    }
+
+    async function deleteProduct(product) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      
+      const result = await window.dataSdk.delete(product);
+      
+      if (result.isOk) {
+        showToast('Product deleted successfully!', 'success');
+      } else {
+        showToast('Failed to delete product. Please try again.', 'error');
+      }
+    }
+
+    function renderAdminProductsList() {
+      const list = document.getElementById('admin-products-list');
+      
+      if (allProducts.length === 0) {
+        list.innerHTML = `<p class="text-center py-4" style="color: #636e72;">No products yet. Add your first product above!</p>`;
+        return;
+      }
+      
+      list.innerHTML = allProducts.map(product => {
+        const hasImage = product.image_url && product.image_url.startsWith('https://');
+        const displayContent = hasImage 
+          ? `<img src="${product.image_url}" alt="${product.product_name}" class="w-16 h-16 object-cover rounded-lg" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+             <span class="text-3xl" style="display: none;">${product.emoji}</span>`
+          : `<span class="text-3xl">${product.emoji}</span>`;
+        
+        return `
+        <div class="flex items-center justify-between p-4 rounded-xl" style="background-color: #faf9f7;">
+          <div class="flex items-center gap-3">
+            ${displayContent}
+            <div>
+              <h5 class="font-semibold" style="color: #2d3436;">${product.product_name}</h5>
+              <p class="text-sm" style="color: #636e72;">${product.currency}${product.price} • ${product.category}</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="editProductById('${product.__backendId}')" class="px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-all" style="background-color: #0066ff; color: #ffffff;">
+              Edit
+            </button>
+            <button onclick="deleteProductById('${product.__backendId}')" class="px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-all" style="background-color: #d63031; color: #ffffff;">
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    function deleteProductById(productId) {
+      const product = allProducts.find(p => p.__backendId === productId);
+      if (product) {
+        deleteProduct(product);
+      }
+    }
+
+    function editProductById(productId) {
+      const product = allProducts.find(p => p.__backendId === productId);
+      if (!product) return;
+
+      // Populate form with product data
+      document.getElementById('editing-product-id').value = productId;
+      document.getElementById('product-name').value = product.product_name;
+      document.getElementById('product-price').value = product.price;
+      document.getElementById('product-currency').value = product.currency;
+      document.getElementById('product-category').value = product.category;
+      document.getElementById('product-emoji').value = product.emoji;
+      document.getElementById('product-gradient').value = product.gradient;
+      document.getElementById('product-link').value = product.link;
+      document.getElementById('product-image-url').value = product.image_url || '';
+
+      // Update UI for editing mode
+      document.getElementById('admin-modal-title').textContent = 'Edit Product';
+      document.getElementById('product-form-title').textContent = 'Edit Product Details';
+      document.getElementById('submit-btn-text').textContent = 'Update Product';
+      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+      // Scroll to form
+      document.getElementById('add-product-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    async function updateProduct(product, productData) {
+      if (!currentUser || currentUser.role !== 'admin') return;
+
+      // Show loading state
+      const submitBtn = document.getElementById('product-submit-btn');
+      const btnText = document.getElementById('submit-btn-text');
+      const btnLoader = document.getElementById('submit-btn-loader');
+      submitBtn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+
+      // Update product
+      const updatedProduct = {
+        ...product,
+        product_name: productData.name,
+        price: parseFloat(productData.price),
+        currency: productData.currency,
+        category: productData.category,
+        emoji: productData.emoji,
+        gradient: productData.gradient,
+        link: productData.link,
+        image_url: productData.image_url || ''
+      };
+
+      const result = await window.dataSdk.update(updatedProduct);
+
+      // Hide loading state
+      submitBtn.disabled = false;
+      btnText.classList.remove('hidden');
+      btnLoader.classList.add('hidden');
+      
+      if (result.isOk) {
+        showToast('Product updated successfully!', 'success');
+        cancelEdit();
+      } else {
+        showToast('Failed to update product. Please try again.', 'error');
+      }
+    }
+
+    function cancelEdit() {
+      // Reset form
+      document.getElementById('add-product-form').reset();
+      document.getElementById('editing-product-id').value = '';
+
+      // Reset UI
+      document.getElementById('admin-modal-title').textContent = 'Product Management';
+      document.getElementById('product-form-title').textContent = 'Add New Product';
+      document.getElementById('submit-btn-text').textContent = 'Add Product';
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl text-white font-medium z-50';
+      toast.style.backgroundColor = type === 'success' ? '#00b894' : '#d63031';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Registration function
+    function registerUser(name, email, password) {
+      // Check if email already exists
+      const existingUser = registeredUsers.find(u => u.email === email);
+      if (existingUser) {
+        return { success: false, message: 'Email already registered' };
+      }
+      
+      // Check demo admin email
+      if (DEMO_USERS[email]) {
+        return { success: false, message: 'This email is reserved' };
+      }
+      
+      const newUser = {
+        name: name,
+        email: email,
+        password: password,
+        role: 'buyer',
+        created_at: new Date().toISOString()
+      };
+      
+      registeredUsers.push(newUser);
+      saveUsers();
+      return { success: true };
+    }
+
+    // Modal functions
+    function openLoginModal() {
+      document.getElementById('login-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('login-form').reset();
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    function openRegisterModal() {
+      closeLoginModal();
+      document.getElementById('register-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('register-modal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('register-form').reset();
+      document.getElementById('register-error').classList.add('hidden');
+      document.getElementById('register-success').classList.add('hidden');
+      document.getElementById('register-submit-btn').disabled = false;
+    }
+
+    function openAdminModal() {
+      if (currentUser && currentUser.role === 'admin') {
+        document.getElementById('admin-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        renderAdminProductsList();
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      cancelEdit();
+    }
+
+    function openBuyerModal() {
+      if (currentUser && currentUser.role === 'buyer') {
+        document.getElementById('buyer-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        renderBuyerOrders();
+      }
+    }
+
+    function closeBuyerModal() {
+      document.getElementById('buyer-modal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function renderBuyerOrders() {
+      const list = document.getElementById('buyer-orders-list');
+      
+      // Filter orders for current buyer
+      const buyerOrders = allOrders.filter(order => 
+        order.buyer_email === currentUser.email
+      );
+      
+      if (buyerOrders.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" style="background-color: #faf9f7;">
+              <svg class="w-10 h-10" style="color: #636e72;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+            </div>
+            <p class="text-lg font-semibold mb-2" style="color: #2d3436;">No orders yet</p>
+            <p class="text-sm" style="color: #636e72;">Your GCash payment orders will appear here</p>
+            <a href="#products" onclick="closeBuyerModal()" class="inline-block mt-4 px-6 py-2 rounded-full font-medium" style="background-color: #0066ff; color: #ffffff;">Browse Products</a>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = buyerOrders.map(order => {
+        const statusColor = order.order_status === 'delivered' ? '#00b894' : '#0066ff';
+        const statusText = order.order_status === 'delivered' ? 'Delivered' : 'Processing';
+        
+        return `
+          <div class="p-4 md:p-6 rounded-xl" style="background-color: #faf9f7;">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h4 class="font-semibold text-lg mb-1" style="color: #2d3436;">${order.product_name}</h4>
+                <p class="text-sm" style="color: #636e72;">Order Date: ${new Date(order.order_date).toLocaleDateString()}</p>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background-color: ${statusColor}; color: #ffffff;">${statusText}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p class="text-xs mb-1" style="color: #636e72;">Amount Paid</p>
+                <p class="font-semibold" style="color: #2d3436;">${order.currency}${order.price}</p>
+              </div>
+              <div>
+                <p class="text-xs mb-1" style="color: #636e72;">Reference</p>
+                <p class="font-semibold" style="color: #2d3436;">${order.gcash_reference || 'N/A'}</p>
+              </div>
+            </div>
+            ${order.order_status === 'delivered' ? `
+              <div class="mt-4 p-3 rounded-lg" style="background-color: #d4edda;">
+                <p class="text-xs font-medium" style="color: #155724;">✓ Product delivered to ${order.buyer_email}</p>
+              </div>
+            ` : `
+              <div class="mt-4 p-3 rounded-lg" style="background-color: #cce5ff;">
+                <p class="text-xs font-medium" style="color: #004085;">⏳ Your order is being processed. We'll send the product to your email within 24 hours.</p>
+              </div>
+            `}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Event listeners
+    document.getElementById('login-btn').addEventListener('click', openLoginModal);
+    document.getElementById('close-login-modal').addEventListener('click', closeLoginModal);
+    document.getElementById('close-register-modal').addEventListener('click', closeRegisterModal);
+    document.getElementById('show-register-btn').addEventListener('click', openRegisterModal);
+    document.getElementById('show-login-btn').addEventListener('click', () => {
+      closeRegisterModal();
+      openLoginModal();
+    });
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('admin-panel-btn').addEventListener('click', openAdminModal);
+    document.getElementById('close-admin-modal').addEventListener('click', closeAdminModal);
+    document.getElementById('buyer-panel-btn').addEventListener('click', openBuyerModal);
+    document.getElementById('close-buyer-modal').addEventListener('click', closeBuyerModal);
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      
+      if (login(email, password)) {
+        closeLoginModal();
+        showToast(`Welcome back, ${currentUser.name}!`, 'success');
+        if (currentUser.role === 'admin') {
+          setTimeout(() => openAdminModal(), 500);
+        }
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('register-name').value;
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm-password').value;
+      
+      const errorDiv = document.getElementById('register-error');
+      const successDiv = document.getElementById('register-success');
+      
+      // Hide previous messages
+      errorDiv.classList.add('hidden');
+      successDiv.classList.add('hidden');
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('register-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating Account...';
+      
+      // Register user
+      const result = registerUser(name, email, password);
+      
+      if (result.success) {
+        successDiv.classList.remove('hidden');
+        setTimeout(() => {
+          closeRegisterModal();
+          openLoginModal();
+          showToast('Account created! Please login with your credentials.', 'success');
+        }, 2000);
+      } else {
+        errorDiv.textContent = result.message;
+        errorDiv.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+
+    document.getElementById('add-product-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const productData = {
+        name: document.getElementById('product-name').value,
+        price: document.getElementById('product-price').value,
+        currency: document.getElementById('product-currency').value,
+        category: document.getElementById('product-category').value,
+        emoji: document.getElementById('product-emoji').value,
+        gradient: document.getElementById('product-gradient').value,
+        link: document.getElementById('product-link').value,
+        image_url: document.getElementById('product-image-url').value
+      };
+
+      const editingId = document.getElementById('editing-product-id').value;
+      if (editingId) {
+        // Update existing product
+        const product = allProducts.find(p => p.__backendId === editingId);
+        if (product) {
+          updateProduct(product, productData);
+        }
+      } else {
+        // Add new product
+        addProduct(productData);
+      }
+    });
+
+    document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
+
+    // Modal background click handlers
+    document.getElementById('login-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('login-modal')) {
+        closeLoginModal();
+      }
+    });
+
+    document.getElementById('register-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('register-modal')) {
+        closeRegisterModal();
+      }
+    });
+
+    document.getElementById('admin-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('admin-modal')) {
+        closeAdminModal();
+      }
+    });
+
+    document.getElementById('buyer-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('buyer-modal')) {
+        closeBuyerModal();
+      }
+    });
+
+    // Initialize on page load
+    loadLocalData();
+    initDataSdk();
 
     // Config change handler
     async function onConfigChange(config) {
@@ -310,6 +1212,94 @@
       });
     }
 
+    // GCash payment functionality
+    let currentProduct = null;
+
+    function openGcashPayment(id, name, price, currency) {
+      currentProduct = { id, name, price, currency };
+      const modal = document.getElementById('gcash-modal');
+      document.getElementById('gcash-product-name').textContent = name;
+      document.getElementById('gcash-product-price').textContent = `${currency}${price}`;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGcashModal() {
+      const modal = document.getElementById('gcash-modal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('gcash-payment-form').reset();
+      document.getElementById('file-name').textContent = '';
+      document.getElementById('gcash-payment-form').classList.remove('hidden');
+      document.getElementById('gcash-success').classList.add('hidden');
+    }
+
+    document.getElementById('close-gcash-modal').addEventListener('click', closeGcashModal);
+
+    document.getElementById('gcash-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('gcash-modal')) {
+        closeGcashModal();
+      }
+    });
+
+    // File upload preview
+    document.getElementById('payment-screenshot').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('file-name').textContent = `✓ ${file.name}`;
+      }
+    });
+
+    // Form submission
+    document.getElementById('gcash-payment-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('buyer-name').value;
+      const email = document.getElementById('buyer-email').value;
+      const phone = document.getElementById('buyer-phone').value;
+      const reference = document.getElementById('gcash-reference').value;
+      const screenshot = document.getElementById('payment-screenshot').files[0];
+
+      // Create order record
+      const orderData = {
+        id: Date.now().toString(),
+        product_name: currentProduct.name,
+        price: currentProduct.price,
+        currency: currentProduct.currency,
+        buyer_email: email,
+        buyer_name: name,
+        buyer_phone: phone,
+        gcash_reference: reference,
+        order_status: 'processing',
+        order_date: new Date().toISOString(),
+        screenshot_name: screenshot?.name
+      };
+
+      allOrders.push(orderData);
+      saveOrders();
+      
+      // Show success message
+      document.getElementById('gcash-payment-form').classList.add('hidden');
+      document.getElementById('gcash-success').classList.remove('hidden');
+
+      // Log for admin notification
+      const orderDetails = `
+        New GCash Order:
+        Product: ${currentProduct.name}
+        Price: ${currentProduct.currency}${currentProduct.price}
+        
+        Buyer Information:
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone}
+        Reference: ${reference || 'Not provided'}
+        
+        Please send the product to: ${email}
+      `;
+      
+      console.log('Email to be sent to cydelalcantarajr9@gmail.com:', orderDetails);
+    });
+
     // About modal functionality
     const aboutModal = document.getElementById('about-modal');
     const aboutBtn = document.getElementById('about-btn');
@@ -329,6 +1319,52 @@
     aboutModal.addEventListener('click', (e) => {
       if (e.target === aboutModal) {
         aboutModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Privacy modal functionality
+    const privacyModal = document.getElementById('privacy-modal');
+    const privacyBtn = document.getElementById('privacy-btn');
+    const closePrivacyModalBtn = document.getElementById('close-privacy-modal');
+
+    privacyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      privacyModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+
+    closePrivacyModalBtn.addEventListener('click', () => {
+      privacyModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+
+    privacyModal.addEventListener('click', (e) => {
+      if (e.target === privacyModal) {
+        privacyModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Terms modal functionality
+    const termsModal = document.getElementById('terms-modal');
+    const termsBtn = document.getElementById('terms-btn');
+    const closeTermsModalBtn = document.getElementById('close-terms-modal');
+
+    termsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      termsModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeTermsModalBtn.addEventListener('click', () => {
+      termsModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+
+    termsModal.addEventListener('click', (e) => {
+      if (e.target === termsModal) {
+        termsModal.style.display = 'none';
         document.body.style.overflow = 'auto';
       }
     });
@@ -355,9 +1391,6 @@
         document.body.style.overflow = 'auto';
       }
     });
-
-    // Initialize
-    renderProducts();
 
     // Initialize Element SDK
     if (window.elementSdk) {
@@ -407,5 +1440,5 @@
       });
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c73d23ae46b4eeb',t:'MTc2OTk3Mzc4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c7bd95c11604eeb',t:'MTc3MDA1Nzk2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
